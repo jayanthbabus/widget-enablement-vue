@@ -302,20 +302,11 @@ export default {
 
     const fetchApiData = async () => {
       try {
-        const [response1, response2] = await Promise.all([
-          axios.get(
-            "http://localhost:8080/widgets/WidgetService/getTable/MEPSummary"
-          ),
-          axios.post(
-            "http://localhost:8080/widgets/WidgetService/getObjectData",
-            {
-              Function: "getMEPData",
-              Program: "emxManfacturingEquivalent",
-              RegisteredSuite: "Framework",
-            }
-          ),
-        ]);
-        tableColumnsData.value = response1.data;
+        const tableColumnsResponse = await axios.get(
+          "http://localhost:8080/widgets/WidgetService/getTable/MEPSummary"
+        );
+
+        tableColumnsData.value = tableColumnsResponse.data;
         columnList.value =
           tableColumnsData.value.ematrix.table.columnList.column.map(
             (column) => {
@@ -329,8 +320,6 @@ export default {
               return column;
             }
           );
-
-        tableObjectsList.value = response2.data;
 
         getDataForBasedOnColumnWise(
           currentFromPageSize.value,
@@ -356,11 +345,11 @@ export default {
 
     const getDataForBasedOnColumnWise = async (from, to) => {
       isDataLoading.value = true;
-
-      const getRowValuesUrl =
-        "http://localhost:8080/widgets/WidgetService/getRowValues";
       const evaluateAccessUrl =
         "http://localhost:8080/widgets/WidgetService/evaluateAccess";
+      const getRowValuesUrl =
+        "http://localhost:8080/widgets/WidgetService/getRowValues";
+
       const columnsForEvaluation = [];
       const columnsReadyForShow = [];
       columnList.value.map((value) => {
@@ -429,7 +418,15 @@ export default {
           },
         };
       });
-
+      const response2 = await axios.post(
+        "http://localhost:8080/widgets/WidgetService/getObjectData",
+        {
+          Function: "getMEPData",
+          Program: "emxManfacturingEquivalent",
+          RegisteredSuite: "Framework",
+        }
+      );
+      tableObjectsList.value = response2.data;
       const mainPostBody = {
         ColumnList: columnsReadyForShow,
         ObjectList: tableObjectsList.value.slice(from, to),

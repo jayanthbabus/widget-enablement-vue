@@ -91,7 +91,7 @@
         <!-- Add more context menu options as needed -->
       </div>
 
-      <v-btn class="up-arrow" fab dark @click="scrollToTop">
+      <!-- <v-btn class="up-arrow" fab dark @click="scrollToTop">
         <v-icon>mdi-chevron-up</v-icon>
       </v-btn>
 
@@ -104,7 +104,7 @@
         :disabled="isLoadMoreDisabled"
       >
         <v-icon>mdi-chevron-down</v-icon>
-      </v-btn>
+      </v-btn> -->
     </div>
     <v-dialog v-model="editModalVisible" max-width="1000px">
       <v-card class="edit-modal">
@@ -337,10 +337,10 @@ export default {
       const isAtBottom =
         scrollElement.scrollTop + scrollElement.clientHeight ===
         scrollElement.scrollHeight;
-      // if (isAtBottom) {
-      //   loadMoreRecords();
-      //   agGridApi.value.sizeColumnsToFit();
-      // }
+      if (isAtBottom) {
+        loadMoreRecords();
+        agGridApi.value.sizeColumnsToFit();
+      }
     };
 
     const getDataForBasedOnColumnWise = async (from, to) => {
@@ -418,6 +418,7 @@ export default {
           },
         };
       });
+      columnDefs.value[0].pinned = "left";
       const response2 = await axios.post(
         "http://localhost:8080/widgets/WidgetService/getObjectData",
         {
@@ -431,40 +432,39 @@ export default {
         ColumnList: columnsReadyForShow,
         ObjectList: tableObjectsList.value.slice(from, to),
       };
-      setTimeout(async () => {
-        try {
-          const res = await makeSingleApiCall(mainPostBody, getRowValuesUrl);
-          isDataLoading.value = false;
-          tableData.value = [...tableData.value, ...res];
-          if (currentToPageSize.value > tableObjectsList.value.length) {
-            currentToPageSize.value = tableObjectsList.value.length;
-          } else {
-            currentToPageSize.value =
-              currentFromPageSize.value + Number(loadMorePageSize);
-          }
-          currentFromPageSize.value = currentToPageSize.value;
-          if (agGridApi.value) {
-            setTimeout(() => {
-              const rowNode = agGridApi.value.getRowNode(
-                currentFromPageSize.value - loadMorePageSize
-              );
-              console.log(rowNode);
-              if (rowNode) {
-                agGridApi.value.ensureNodeVisible(rowNode, "middle");
-              }
-            }, 0);
 
-            // agGridApi.value.ensureIndexVisible(
-            //   currentFromPageSize.value - loadMorePageSize,
-            //   "middle"
-            // );
-          }
-        } catch (err) {
-          console.log(err);
-          tableData.value = [];
-          isDataLoading.value = false;
+      try {
+        const res = await makeSingleApiCall(mainPostBody, getRowValuesUrl);
+        isDataLoading.value = false;
+        tableData.value = [...tableData.value, ...res];
+        if (currentToPageSize.value > tableObjectsList.value.length) {
+          currentToPageSize.value = tableObjectsList.value.length;
+        } else {
+          currentToPageSize.value =
+            currentFromPageSize.value + Number(loadMorePageSize);
         }
-      }, 3000);
+        currentFromPageSize.value = currentToPageSize.value;
+        if (agGridApi.value) {
+          setTimeout(() => {
+            const rowNode = agGridApi.value.getRowNode(
+              currentFromPageSize.value - loadMorePageSize
+            );
+            console.log(rowNode);
+            if (rowNode) {
+              agGridApi.value.ensureNodeVisible(rowNode, "middle");
+            }
+          }, 0);
+
+          // agGridApi.value.ensureIndexVisible(
+          //   currentFromPageSize.value - loadMorePageSize,
+          //   "middle"
+          // );
+        }
+      } catch (err) {
+        console.log(err);
+        tableData.value = [];
+        isDataLoading.value = false;
+      }
     };
 
     const loadMoreRecords = async () => {
@@ -614,6 +614,7 @@ export default {
       scrollElement.addEventListener("scroll", handleGridScroll);
     };
     onMounted(() => {
+      console.log("component loading");
       fetchApiData();
     });
     watchEffect(() => {

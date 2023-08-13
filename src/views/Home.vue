@@ -347,6 +347,8 @@ export default {
       isDataLoading.value = true;
       const evaluateAccessUrl =
         "http://localhost:8080/widgets/WidgetService/evaluateAccess";
+      const getObjectsUrl =
+        "http://localhost:8080/widgets/WidgetService/getObjectData";
       const getRowValuesUrl =
         "http://localhost:8080/widgets/WidgetService/getRowValues";
 
@@ -419,14 +421,11 @@ export default {
         };
       });
       columnDefs.value[0].pinned = "left";
-      const response2 = await axios.post(
-        "http://localhost:8080/widgets/WidgetService/getObjectData",
-        {
-          Function: "getMEPData",
-          Program: "emxManfacturingEquivalent",
-          RegisteredSuite: "Framework",
-        }
-      );
+      const response2 = await axios.post(getObjectsUrl, {
+        Function: "getMEPData",
+        Program: "emxManfacturingEquivalent",
+        RegisteredSuite: "Framework",
+      });
       tableObjectsList.value = response2.data;
       const mainPostBody = {
         ColumnList: columnsReadyForShow,

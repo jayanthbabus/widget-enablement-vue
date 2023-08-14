@@ -7,7 +7,8 @@
 // Components
 import App from "./App.vue";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { x3DDashboardUtils } from "./lib/widget";
+import { initWidget, x3DDashboardUtils } from "./lib/widget";
+import store from "./store";
 import "bootstrap";
 // Composables
 import { createApp } from "vue";
@@ -15,13 +16,15 @@ import { createApp } from "vue";
 // Plugins
 import { registerPlugins } from "@/plugins";
 
-x3DDashboardUtils.disableCSS(true);
+initWidget((widget) => {
+  x3DDashboardUtils.disableCSS(true);
+  console.log(widget);
+  // add title to widget container
+  window.title = "Widget Enablement";
+  //widget.setTitle(window.title);
+  const app = createApp(App);
+  app.use(store); // Use your Vuex store
+  registerPlugins(app);
 
-// add title to widget container
-window.title = "Widget Enablement";
-//widget.setTitle(window.title);
-const app = createApp(App);
-
-registerPlugins(app);
-
-app.mount("#app");
+  app.mount("#app");
+});

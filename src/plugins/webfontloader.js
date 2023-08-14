@@ -1,15 +1,19 @@
-/**
- * plugins/webfontloader.js
- *
- * webfontloader documentation: https://github.com/typekit/webfontloader
- */
+// plugins/webfontloader.js
 
-export async function loadFonts () {
-  const webFontLoader = await import(/* webpackChunkName: "webfontloader" */'webfontloader')
+import WebFontLoader from 'webfontloader';
 
-  webFontLoader.load({
-    google: {
-      families: ['Roboto:100,300,400,500,700,900&display=swap'],
-    },
-  })
+export async function loadFonts() {
+  try {
+    await new Promise((resolve, reject) => {
+      WebFontLoader.load({
+        google: {
+          families: ['Roboto:100,300,400,500,700,900&display=swap'],
+        },
+        active: resolve,
+        inactive: reject,
+      });
+    });
+  } catch (error) {
+    console.error('Error loading fonts:', error);
+  }
 }

@@ -255,7 +255,7 @@ import {
   getColumnsBasedOnFieldSettingNameAndValue,
   makeSingleApiCall,
 } from "../utils/utils.js";
-
+import { useStore } from 'vuex';
 export default {
   name: "DashboardTable",
   components: {
@@ -614,6 +614,8 @@ export default {
     };
     onMounted(() => {
       console.log("component loading");
+      const store = useStore();
+      console.log(store)
       fetchApiData();
     });
     watchEffect(() => {

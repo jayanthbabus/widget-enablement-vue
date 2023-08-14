@@ -151,7 +151,7 @@ export function initWidget(cbOk, cbError) {
                 resolve();
             });
             try {
-                oReq.open("GET", "static/lib/require.js");
+                oReq.open("GET", "../static/lib/require.js");
                 oReq.send();
             } catch (err) {
                 reject(err);
